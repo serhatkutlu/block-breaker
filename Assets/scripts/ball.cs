@@ -7,6 +7,7 @@ public class ball : MonoBehaviour
     Rigidbody2D rb;
     [SerializeField] int ball_velocity;
     [SerializeField] int firs_jump_velocity;
+    [SerializeField] float ball_random_speed;
     bool first_jump_bool=true;
 
     void Start()
@@ -25,12 +26,32 @@ public class ball : MonoBehaviour
 
         }
     }
+
+   
     private void OnCollisionExit2D(Collision2D collision)
+    {
+        bug_fix();
+ 
+        speed_balancing();
+       
+    }
+private void bug_fix()
+    {
+        if (rb.velocity.y>-2&&rb.velocity.y<2)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 3);
+        }
+    }
+    private void speed_balancing()
     {
         float x_velocity = Mathf.Clamp(rb.velocity.x, -ball_velocity, ball_velocity);
         float y_velocity = Mathf.Clamp(rb.velocity.y, -ball_velocity, ball_velocity);
+
         rb.velocity = new Vector2(x_velocity, y_velocity);
     }
+
+    
+
     public void first_jump(int jump_velocity)
     {
         first_jump_bool = false;
