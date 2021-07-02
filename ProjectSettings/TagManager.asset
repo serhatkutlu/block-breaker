@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - mind_wall
+  - ball
   layers:
   - Default
   - TransparentFX

@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class ball : MonoBehaviour
 {
-    Rigidbody2D rb;
+    
     [SerializeField] int ball_velocity;
-    [SerializeField] int firs_jump_velocity;
     [SerializeField] float ball_random_speed;
-    bool first_jump_bool=true;
+    bool first_jump_bool=true,deadbool=true;
+    GameObject paddle;
+    Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        paddle = GameObject.Find("Paddle");
     }
 
     // Update is called once per frame
@@ -21,13 +23,22 @@ public class ball : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && first_jump_bool)
         {
 
-            first_jump(firs_jump_velocity);
+            first_jump(ball_velocity);
 
 
         }
+        if (transform.position.y+1<paddle.transform.position.y&&deadbool)
+        {
+            dead();
+            deadbool = false;
+        }
     }
 
-   
+    private void dead()
+    {
+        print("dead");
+    }
+
     private void OnCollisionExit2D(Collision2D collision)
     {
         bug_fix();
@@ -41,6 +52,7 @@ private void bug_fix()
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 3);
         }
+        rb.velocity = new Vector2(rb.velocity.x +rb.velocity.x/ball_velocity, rb.velocity.y);
     }
     private void speed_balancing()
     {
@@ -56,7 +68,7 @@ private void bug_fix()
     {
         first_jump_bool = false;
         parrent_set();
-        Vector2 random_vector = new Vector2(10, Random.Range(0, jump_velocity));
+        Vector2 random_vector = new Vector2(Random.Range(-jump_velocity, jump_velocity), jump_velocity);
         rb.velocity = random_vector;
 
     }
