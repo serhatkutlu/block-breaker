@@ -5,59 +5,81 @@ using UnityEngine;
 public class ball : MonoBehaviour
 {
     
-    [SerializeField] int ball_velocity;
-    [SerializeField] float ball_random_speed;
-    bool first_jump_bool=true,deadbool=true;
+    private int difficulty=4;
+    
+    bool first_jump_bool=true,deadbool=true,start;
     GameObject paddle;
     Rigidbody2D rb;
+    GameManager gm;
 
     void Start()
     {
+        gm = GameObject.FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         paddle = GameObject.Find("Paddle");
+
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonUp(0) && first_jump_bool)
+        if (gm.gamestart)
         {
 
-            first_jump(ball_velocity);
+            difficulty = gm.difficulty;
+            if (Input.GetMouseButtonUp(0) && first_jump_bool&&start)
+            {
+
+                first_jump(difficulty);
 
 
-        }
-        if (transform.position.y+1<paddle.transform.position.y&&deadbool)
-        {
-            dead();
-            deadbool = false;
+            }
+            if (transform.position.y + 1 < paddle.transform.position.y && deadbool)
+            {
+                gm.Dead();
+                deadbool = false;
+            }
+            
+            start = true;
         }
     }
 
-    private void dead()
+
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        print("dead");
+        gm.playaudio();
     }
-
     private void OnCollisionExit2D(Collision2D collision)
     {
         bug_fix();
  
         speed_balancing();
+        
+        gm.nextlevel(); 
        
     }
 private void bug_fix()
     {
-        if (rb.velocity.y>-2&&rb.velocity.y<2)
+        //prevents the ball from going into an infinite loop
+        if (rb.velocity.x>-2&&rb.velocity.x<2)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 3);
+            rb.velocity = new Vector2(rb.velocity.x * 3, rb.velocity.y );
         }
-        rb.velocity = new Vector2(rb.velocity.x +rb.velocity.x/ball_velocity, rb.velocity.y);
+        
+        if (rb.velocity.y==0)
+        {
+            rb.velocity = new Vector2( rb.velocity.x,Random.Range(-difficulty, difficulty));
+        }
+        if (rb.velocity.x == 0)
+        {
+            rb.velocity = new Vector2(Random.Range(-difficulty, difficulty),rb.velocity.y);
+        }
     }
     private void speed_balancing()
     {
-        float x_velocity = Mathf.Clamp(rb.velocity.x, -ball_velocity, ball_velocity);
-        float y_velocity = Mathf.Clamp(rb.velocity.y, -ball_velocity, ball_velocity);
+        float x_velocity = Mathf.Clamp(rb.velocity.x, -difficulty, difficulty);
+        float y_velocity = Mathf.Clamp(rb.velocity.y, -difficulty, difficulty);
 
         rb.velocity = new Vector2(x_velocity, y_velocity);
     }

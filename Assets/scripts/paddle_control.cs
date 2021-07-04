@@ -9,28 +9,40 @@ public class paddle_control : MonoBehaviour
 
 
     [SerializeField] float paddle_max;
+    GameManager gm;
     void Start()
     {
-       
-        
+
+        gm = FindObjectOfType<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+
+
+        if (Input.touchCount>0)
         {
-            paddle_move();
+            
+            if (Input.GetMouseButton(0)&&gm.gamestart)
+            {
+                paddle_move();
+            }
         }
         
+
+
+
+
     }
 
-   
+
 
     private void paddle_move()
     {
-        Vector2 mouse_vector = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        transform.position =new Vector2(mouse_vector.x,transform.position.y) ;
+        Touch touch = Input.GetTouch(0);
+        Vector2 touch_vector =Camera.main.ScreenToWorldPoint(touch.position);
+        transform.position =new Vector2(touch_vector.x,transform.position.y) ;
         paddle_clamp(paddle_max);
     }
 

@@ -6,11 +6,14 @@ using UnityEngine;
 public class block : MonoBehaviour
 {
     GameManager gm;
+    uý uýs;
     int block_level;
+
     void Start()
     {
-        gm = GameObject.FindObjectOfType<GameManager>();
-        
+
+        gm = FindObjectOfType<GameManager>();
+        uýs=FindObjectOfType<uý>();
         gm.block_count++;
         block_level = gm.block_level;
          
@@ -20,12 +23,16 @@ public class block : MonoBehaviour
     {
         if (collision.transform.CompareTag("ball"))
         {
+            uýs.score_update();
+
             if (block_level>-1)
             {
                 Break(block_level);
             }
             else
-            {
+            {   
+                gm.block_count--;
+                
                 Destroy(gameObject);
             }
         }
